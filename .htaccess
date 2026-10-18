@@ -1,0 +1,13 @@
+# Only used when the project folder itself is the web root; better to point the document root at public/.
+Options -Indexes
+DirectoryIndex index.php
+
+# Private folders also carry their own "Require all denied", in case mod_rewrite is off.
+RedirectMatch 404 ^(.*/)?(composer\.(json|lock)|README\.md|ADDONS\.md|\.git.*|\.env.*)$
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    RewriteRule ^(?!public/)(.*)$ public/$1 [L]
+</IfModule>

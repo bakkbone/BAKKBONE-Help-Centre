@@ -1,0 +1,10 @@
+/* Use the help desk's CSS variables so light and dark mode both work. */
+.hello-banner { display: flex; align-items: center; gap: 12px; padding: 14px 18px; margin-bottom: 16px; border-radius: var(--md-shape-lg, 16px);
+  background: var(--md-secondary-container); color: var(--md-on-secondary-container); font-weight: 500; }
+.hello-banner .icon { width: 22px; height: 22px; }
+.hello-note { padding: 10px 12px; border-radius: var(--md-shape-sm); margin-bottom: 8px; }
+.hello-note p { margin: 0 0 4px; overflow-wrap: anywhere; }
+.hello-yellow .hello-note { background: color-mix(in srgb, #f9ab00 18%, transparent); }
+.hello-blue .hello-note { background: color-mix(in srgb, #1a73e8 16%, transparent); }
+.hello-green .hello-note { background: color-mix(in srgb, #1e8e3e 16%, transparent); }
+.hello-notes form { margin-top: 12px; }

@@ -1,0 +1,35 @@
+{
+    "name": "Hello World (example)",
+    "version": "1.0.0",
+    "description": "A sample add-on showing what add-ons can do: ticket notes in the sidebar, a stats page, a merge tag, an email footer and an API endpoint. Copy this folder to start your own.",
+    "author": "BAKKBONE Australia",
+    "url": "https://bakkbone.com.au",
+    "requires": {
+        "helpcentre": ">=1.0.0",
+        "php": ">=8.1"
+    },
+    "settings": {
+        "greeting": {
+            "label": "Greeting",
+            "type": "text",
+            "default": "Hello",
+            "hint": "Shown on the dashboard, and available in email templates as %{hello.greeting}."
+        },
+        "show_dashboard": {
+            "label": "Show a greeting on the agent dashboard",
+            "type": "checkbox",
+            "default": true
+        },
+        "colour": {
+            "label": "Note colour",
+            "type": "select",
+            "options": { "yellow": "Yellow", "blue": "Blue", "green": "Green" },
+            "default": "yellow"
+        },
+        "email_footer": {
+            "label": "Extra footer for outgoing emails",
+            "type": "textarea",
+            "hint": "Optional plain text added to the bottom of every email the help desk sends."
+        }
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "name": "bakkbone/help-centre",
+    "description": "BAKKBONE Help Centre - a self-hosted PHP help desk and ticketing system (osTicket alternative).",
+    "type": "project",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        { "name": "BAKKBONE Australia" }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "phpmailer/phpmailer": "^6.9 || ^7.0",
+        "ezyang/htmlpurifier": "^4.17"
+    },
+    "suggest": {
+        "ext-pdo_mysql": "Required for MySQL / MariaDB (recommended for production)",
+        "ext-pdo_sqlite": "Required for SQLite (small installs / development)",
+        "ext-iconv": "Improves decoding of emails in legacy character sets",
+        "ext-fileinfo": "Improves MIME-type detection of uploaded attachments",
+        "ext-intl": "Improves internationalised email address handling"
+    },
+    "autoload": {
+        "psr-4": { "Bakkbone\\HelpCentre\\": "src/" },
+        "files": [ "src/helpers.php" ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}

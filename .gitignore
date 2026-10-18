@@ -1,0 +1,14 @@
+/vendor/
+/config/config.php
+/storage/*
+!/storage/.htaccess
+!/storage/.gitkeep
+!/storage/attachments/
+/storage/attachments/*
+!/storage/attachments/.gitkeep
+.DS_Store
+Thumbs.db
+/.idea/
+/.vscode/
+composer.test.json
+composer.test.lock
