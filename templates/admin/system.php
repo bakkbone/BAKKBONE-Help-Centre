@@ -10,9 +10,13 @@
       <pre id="cron1">*/2 * * * * <?= e(PHP_BINARY) ?> <?= e(HC_ROOT) ?>/bin/cron.php &gt;/dev/null 2&gt;&amp;1</pre>
       <p class="small"><?= t('<strong>Windows Task Scheduler</strong> (every 2 minutes)') ?></p>
       <pre><?= e(PHP_BINARY) ?> "<?= e(HC_ROOT) ?>\bin\cron.php"</pre>
-      <p class="small"><?= t('<strong>Web cron</strong> (for hosts without cron access - keep this URL secret)') ?></p>
+      <p class="small"><?= t('<strong>Web cron</strong> (for hosts without cron access - keep the key secret)') ?></p>
+      <p class="small muted"><?= t('Send the key in an {header} header if your web-cron service allows custom headers, so it stays out of web server logs:', ['header' => raw('<code>X-Cron-Key</code>')]) ?></p>
+      <pre id="cronheader">curl -fsS -H "X-Cron-Key: <?= e($cronKey) ?>" "<?= e($cronEndpoint) ?>"</pre>
+      <p class="small muted"><?= t('Otherwise use this URL, which has the key in it:') ?></p>
       <pre id="cronurl"><?= e($cronUrl) ?></pre>
       <div class="btn-row">
+        <button class="btn btn-sm" type="button" data-copy="cronheader"><?= t('Copy command') ?></button>
         <button class="btn btn-sm" type="button" data-copy="cronurl"><?= t('Copy URL') ?></button>
         <form method="post" action="<?= e(url('/panel/admin/system/cron')) ?>" class="inline"><?= csrf_field() ?><button class="btn btn-sm btn-primary" type="submit"><?= t('Run cron now') ?></button></form>
       </div>

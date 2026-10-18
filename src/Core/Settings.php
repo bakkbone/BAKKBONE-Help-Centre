@@ -40,6 +40,7 @@ final class Settings
         'staff_email_reply' => '1',
         'add_cc_collaborators' => '1',
         'collaborator_ticket_visibility' => '1',
+        'block_remote_images' => '1',
 
         'default_email_account_id' => '',
         'alert_email_account_id' => '',

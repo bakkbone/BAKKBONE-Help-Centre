@@ -81,6 +81,24 @@ final class Html
         return self::$purifiers[$profile] = new \HTMLPurifier($config);
     }
 
+    /** @return array{0:string,1:int} the HTML with off-site image addresses moved to data-remote-src, and how many were hidden */
+    public static function hideRemoteImages(string $html): array
+    {
+        $ownHost = strtolower((string)parse_url(App::baseUrl(), PHP_URL_HOST));
+        $hidden = 0;
+        $out = (string)preg_replace_callback('~<img\b[^>]*>~i', function ($m) use ($ownHost, &$hidden) {
+            return (string)preg_replace_callback('~\ssrc\s*=\s*(["\'])(.*?)\1~is', function ($s) use ($ownHost, &$hidden) {
+                $src = html_entity_decode($s[2], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                if (!preg_match('~^(https?:)?//~i', $src) || strtolower((string)parse_url($src, PHP_URL_HOST)) === $ownHost) {
+                    return $s[0];
+                }
+                $hidden++;
+                return ' data-remote-src=' . $s[1] . $s[2] . $s[1];
+            }, $m[0], 1);
+        }, $html);
+        return [$out, $hidden];
+    }
+
     public static function fromText(string $text): string
     {
         $text = str_replace(["\r\n", "\r"], "\n", trim($text));

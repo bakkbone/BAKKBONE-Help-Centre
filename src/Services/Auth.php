@@ -34,7 +34,7 @@ final class Auth
             return null;
         }
         $s = App::db()->find('staff', $id);
-        if (!$s || !$s['active']) {
+        if (!$s || !$s['active'] || !self::stampMatches('staff_pw', $s)) {
             self::logoutStaff();
             return null;
         }
@@ -55,12 +55,13 @@ final class Auth
         Session::set('staff_last_active', time());
         Staff::touchLogin((int)$s['id']);
         self::$staff = App::db()->find('staff', (int)$s['id']);
+        Session::set('staff_pw', self::stamp((array)self::$staff));
         self::$staffLoaded = true;
     }
 
     public static function logoutStaff(): void
     {
-        Session::forget('staff_id', 'staff_last_active', 'staff_pending', 'staff_pending_2fa');
+        Session::forget('staff_id', 'staff_last_active', 'staff_pending', 'staff_pending_2fa', 'staff_pw');
         self::$staff = null;
     }
 
@@ -115,7 +116,7 @@ final class Auth
             return null;
         }
         $u = App::db()->find('users', $id);
-        if (!$u || $u['status'] !== 'active') {
+        if (!$u || $u['status'] !== 'active' || !self::stampMatches('user_pw', $u)) {
             self::logoutUser();
             return null;
         }
@@ -137,11 +138,12 @@ final class Auth
         App::db()->update('users', ['last_login_at' => DB::now(), 'verified' => 1], 'id = ?', [$u['id']]);
         self::$user = App::db()->find('users', (int)$u['id']);
         self::$userLoaded = true;
+        Session::set('user_pw', self::stamp((array)self::$user));
     }
 
     public static function logoutUser(): void
     {
-        Session::forget('user_id', 'user_last_active', 'user_pending', 'guest_ticket');
+        Session::forget('user_id', 'user_last_active', 'user_pending', 'guest_ticket', 'user_pw');
         self::$user = null;
     }
 
@@ -168,6 +170,31 @@ final class Auth
             View::redirect('/login');
         }
         return $u;
+    }
+
+    // Changing a password (or an admin clearing it) signs out every other session of that account.
+    private static function stamp(array $row): string
+    {
+        return substr(hash('sha256', 'pw|' . ($row['password_hash'] ?? '')), 0, 16);
+    }
+
+    private static function stampMatches(string $key, array $row): bool
+    {
+        $have = Session::get($key);
+        if ($have === null) {
+            Session::set($key, self::stamp($row)); // sessions from before this check existed
+            return true;
+        }
+        return hash_equals((string)$have, self::stamp($row));
+    }
+
+    /** Call after the signed-in person changes their own password, so this session stays signed in. */
+    public static function refreshStamp(string $table, int $id): void
+    {
+        $row = App::db()->find($table, $id);
+        if ($row) {
+            Session::set($table === 'staff' ? 'staff_pw' : 'user_pw', self::stamp($row));
+        }
     }
 
     public static function throttled(string $scope, string $identifier): bool

@@ -267,13 +267,16 @@ main { flex: 1; padding: 24px 0 56px; }
 .nav-toggle:hover { background: color-mix(in srgb, var(--md-on-surface-variant) var(--md-hover), transparent); }
 .nav-toggle svg { width: 24px; height: 24px; }
 .nav { display: none; width: 100%; flex-direction: column; gap: 2px; padding: 4px 0 16px; }
-.nav a {
+/* Sign-out is a POST form so other sites can't sign people out; its button looks like the links around it. */
+.signout-form { display: contents; }
+.nav .nav-link { border: 0; background: transparent; font-family: inherit; line-height: inherit; cursor: pointer; text-align: start; }
+.nav a, .nav .nav-link {
   white-space: nowrap; color: var(--md-on-surface-variant); padding: 0 16px; min-height: 48px; border-radius: var(--md-shape-full);
   font-size: 14px; font-weight: 500; letter-spacing: .007em; display: flex; align-items: center; gap: 12px;
   transition: background var(--md-dur) var(--md-ease), color var(--md-dur) var(--md-ease);
 }
-.nav a:hover { background: color-mix(in srgb, var(--md-on-surface) var(--md-hover), transparent); color: var(--md-on-surface); text-decoration: none; }
-.nav a:active { background: color-mix(in srgb, var(--md-on-surface) var(--md-pressed), transparent); }
+.nav a:hover, .nav .nav-link:hover { background: color-mix(in srgb, var(--md-on-surface) var(--md-hover), transparent); color: var(--md-on-surface); text-decoration: none; }
+.nav a:active, .nav .nav-link:active { background: color-mix(in srgb, var(--md-on-surface) var(--md-pressed), transparent); }
 .nav a.active { color: var(--md-on-secondary-container); background: var(--md-secondary-container); }
 .nav a.active:hover { background: color-mix(in srgb, var(--md-on-secondary-container) var(--md-hover), var(--md-secondary-container)); }
 .nav .spacer { flex: 1; }
@@ -282,14 +285,14 @@ main { flex: 1; padding: 24px 0 56px; }
 @media (min-width: 1200px) {
   .nav-toggle { display: none; }
   .nav { display: flex; flex-direction: row; width: auto; flex: 1; padding: 0; align-items: center; gap: 2px; }
-  .nav a { padding: 0 12px; min-height: 40px; gap: 8px; }
+  .nav a, .nav .nav-link { padding: 0 12px; min-height: 40px; gap: 8px; }
   .staff-ui .nav-name { display: none; }
   .nav .count { margin-inline-start: 2px; }
 }
 @media (min-width: 900px) {
   .client-ui .nav-toggle { display: none; }
   .client-ui .nav { display: flex; flex-direction: row; width: auto; flex: 1; padding: 0; align-items: center; gap: 2px; }
-  .client-ui .nav a { padding: 0 14px; min-height: 40px; gap: 8px; }
+  .client-ui .nav a, .client-ui .nav .nav-link { padding: 0 14px; min-height: 40px; gap: 8px; }
 }
 .userchip { display: inline-flex; align-items: center; gap: 8px; }
 .avatar { width: 32px; height: 32px; border-radius: var(--md-shape-full); background: var(--md-primary-container); color: var(--md-on-primary-container); display: inline-grid; place-items: center; font-weight: 500; font-size: 13px; flex: none; letter-spacing: 0; }
@@ -402,6 +405,9 @@ legend { font-size: 14px; font-weight: 500; letter-spacing: .007em; padding: 0 8
 .alert-error { background: var(--md-error-container); color: var(--md-on-error-container); }
 .alert-warning { background: var(--md-warning-container); color: var(--md-on-warning-container); }
 .alert-info { background: var(--md-info-container); color: var(--md-on-info-container); }
+.remote-images-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.remote-images-bar[hidden] { display: none; }
+.entry-body img[data-remote-src] { display: inline-block; min-width: 48px; min-height: 32px; border: 1px dashed var(--md-outline-variant); border-radius: 4px; vertical-align: middle; }
 .badge {
   display: inline-flex; align-items: center; gap: 6px; padding: 0 8px; min-height: 24px; border-radius: var(--md-shape-sm);
   font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: .042em; white-space: nowrap; vertical-align: middle;

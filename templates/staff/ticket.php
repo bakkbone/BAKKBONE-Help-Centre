@@ -74,6 +74,10 @@ $assigneeSelect = function (string $current) use ($agents, $teams): string {
 
 </div>
 
+<div class="alert alert-info remote-images-bar no-print" data-remote-images-bar hidden>
+  <span><?= t('Images from other websites are hidden, so the sender can\'t tell when this ticket was opened.') ?></span>
+  <button class="btn btn-sm" type="button" data-show-remote-images><?= t('Show images') ?></button>
+</div>
 <div class="ticket-layout">
   <div>
     <div class="thread">
@@ -233,15 +237,19 @@ $assigneeSelect = function (string $current) use ($agents, $teams): string {
           <?php foreach ($collaborators as $c): ?>
             <li style="display:flex;gap:8px;align-items:center">
               <span style="flex:1;min-width:0;<?= $c['collab_active'] ? '' : 'text-decoration:line-through;opacity:.6' ?>"><a href="<?= e(url('/panel/users/' . $c['id'])) ?>"><?= e($c['name']) ?></a><br><span class="faint"><?= e($c['email']) ?></span></span>
+              <?php if ($perm('ticket.collaborators')): ?>
               <form class="inline" method="post" action="<?= e(url('/panel/tickets/' . $t['id'] . '/collaborators')) ?>"><?= csrf_field() ?><input type="hidden" name="toggle" value="<?= (int)$c['id'] ?>"><button class="link-btn small" type="submit"><?= $c['collab_active'] ? t('Pause') : t('Resume') ?></button></form>
               <form class="inline" method="post" action="<?= e(url('/panel/tickets/' . $t['id'] . '/collaborators')) ?>"><?= csrf_field() ?><input type="hidden" name="remove" value="<?= (int)$c['id'] ?>"><button class="link-btn danger small" type="submit" title="<?= t('Remove') ?>">✕</button></form>
+              <?php endif; ?>
             </li>
           <?php endforeach; ?>
         </ul>
+        <?php if ($perm('ticket.collaborators')): ?>
         <form method="post" action="<?= e(url('/panel/tickets/' . $t['id'] . '/collaborators')) ?>" style="margin-top:10px">
           <?= csrf_field() ?>
           <div class="inline-form"><input type="email" name="email" placeholder="<?= t('email@example.com') ?>" required aria-label="<?= t('Collaborator email') ?>"><button class="btn btn-sm" type="submit"><?= t('Add') ?></button></div>
         </form>
+        <?php endif; ?>
       </div>
     </div>
 

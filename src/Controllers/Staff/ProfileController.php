@@ -61,6 +61,7 @@ final class ProfileController extends StaffController
         }
         App::db()->update('staff', ['password_hash' => Auth::hash($pw), 'updated_at' => DB::now()], 'id = ?', [$this->staff['id']]);
         Session::regenerate();
+        Auth::refreshStamp('staff', (int)$this->staff['id']);
         Audit::log('staff.password_change', 'staff', (int)$this->staff['id']);
         $this->flash('success', __('Password changed.'));
         $this->redirect('/panel/profile');

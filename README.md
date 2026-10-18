@@ -41,6 +41,14 @@ Details: [Requirements](https://github.com/bakkbone/BAKKBONE-Help-Centre/wiki/Re
    */2 * * * * php /path/to/BAKKBONE-Help-Centre/bin/cron.php >/dev/null 2>&1
    ```
 
+   No cron on your host? Call the web cron URL from a web-cron service instead, sending the `cron_key` from `config/config.php` in an `X-Cron-Key` header so it stays out of server logs:
+
+   ```bash
+   curl -fsS -H "X-Cron-Key: your-cron-key" https://help.example.com/api/cron
+   ```
+
+   If the service can't send headers, use `https://help.example.com/api/cron?key=your-cron-key`. **Admin → System** shows both, filled in for your help desk.
+
 **Back up `config/config.php`**: it holds the `app_key` that encrypts stored secrets.
 
 To try it locally:

@@ -9,6 +9,10 @@
   <dt><?= t('Created') ?></dt><dd><?= e(fmt_dt($t['created_at'])) ?></dd>
   <?php foreach ($fields as $f): ?><dt><?= e($f['label']) ?></dt><dd><?= e($f['display']) ?></dd><?php endforeach; ?>
 </dl>
+<div class="alert alert-info remote-images-bar no-print" data-remote-images-bar hidden>
+  <span><?= t('Images from other websites are hidden, so the sender can\'t tell when this ticket was opened.') ?></span>
+  <button class="btn btn-sm" type="button" data-show-remote-images><?= t('Show images') ?></button>
+</div>
 <div class="thread">
   <?php foreach ($entries as $e): ?><?= View::partial('partials/entry', ['e' => $e, 'staffView' => true]) ?><?php endforeach; ?>
 </div>

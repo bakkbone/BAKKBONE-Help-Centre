@@ -32,7 +32,7 @@ $active = fn(string $prefix) => ($prefix === '/' ? $p === '/' : str_starts_with(
       <span class="spacer"></span>
       <?php if ($cu): ?>
         <a href="<?= e(url('/profile')) ?>"<?= $active('/profile') ?>><span class="avatar"><?= e(initials($cu['name'])) ?></span><?= e($cu['name']) ?></a>
-        <a href="<?= e(url('/logout')) ?>"><?= t('Sign out') ?></a>
+        <form class="signout-form" method="post" action="<?= e(url('/logout')) ?>"><?= csrf_field() ?><button class="nav-link" type="submit"><?= t('Sign out') ?></button></form>
       <?php else: ?>
         <a href="<?= e(url('/login')) ?>"<?= $active('/login') ?>><?= t('Sign in') ?></a>
         <?php if (setting('client_registration') === 'public'): ?><a href="<?= e(url('/register')) ?>"<?= $active('/register') ?>><?= t('Create account') ?></a><?php endif; ?>

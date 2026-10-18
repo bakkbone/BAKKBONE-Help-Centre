@@ -70,7 +70,7 @@ $navItem = function (string $href, string $icon, string $label, string $short, b
       <a class="appbar-user<?= $isActive('/panel/profile') ? ' active' : '' ?>" href="<?= e(url('/panel/profile')) ?>" title="<?= t('My profile') ?>">
         <span class="avatar"><?= e(initials(Staff::name($me))) ?></span><span class="appbar-name"><?= e($me['first_name']) ?></span>
       </a>
-      <a class="icon-btn" href="<?= e(url('/panel/logout')) ?>" aria-label="<?= t('Sign out') ?>" title="<?= t('Sign out') ?>"><?= icon('logout') ?></a>
+      <form class="signout-form" method="post" action="<?= e(url('/panel/logout')) ?>"><?= csrf_field() ?><button class="icon-btn" type="submit" aria-label="<?= t('Sign out') ?>" title="<?= t('Sign out') ?>"><?= icon('logout') ?></button></form>
     <?php endif; ?>
   </header>
   <main>

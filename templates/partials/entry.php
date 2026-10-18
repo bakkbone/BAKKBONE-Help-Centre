@@ -1,6 +1,11 @@
 <?php
 /** @var array $e */
 $isStaffView = !empty($staffView);
+$body = (string)$e['body'];
+if ($isStaffView && setting('block_remote_images') !== '0') {
+    // Off-site images can tell the sender when, and from which IP, an agent opened the ticket.
+    [$body] = \Bakkbone\HelpCentre\Core\Html::hideRemoteImages($body);
+}
 ?>
 <article class="entry <?= e($e['type']) ?>" id="entry-<?= (int)$e['id'] ?>">
   <span class="avatar entry-avatar" aria-hidden="true"><?= $e['type'] === 'N' ? icon('lock') : e(initials((string)$e['poster'])) ?></span>
@@ -14,7 +19,7 @@ $isStaffView = !empty($staffView);
           if (!empty($rc['cc'])): ?><span class="small faint"><?= t('cc: {addresses}', ['addresses' => implode(', ', array_column($rc['cc'], 'email'))]) ?></span><?php endif; endif; ?>
       <time class="when" datetime="<?= e($e['created_at']) ?>Z" title="<?= e(fmt_dt($e['created_at'])) ?>"><?= e(fmt_dt($e['created_at'])) ?></time>
     </header>
-    <div class="entry-body"><?= $e['body'] /* sanitised with HTMLPurifier when stored */ ?></div>
+    <div class="entry-body"><?= $body /* sanitised with HTMLPurifier when stored */ ?></div>
     <?php if (!empty($e['attachments'])): ?>
     <div class="entry-files">
       <?php foreach ($e['attachments'] as $a): ?>

@@ -34,15 +34,15 @@ final class ParsedEmail
         return $v === null ? null : MimeParser::decodeHeader($v);
     }
 
+    // From, never Reply-To: SPF/DKIM/DMARC don't cover Reply-To, so anyone could claim an agent's address there.
     public function senderEmail(): string
     {
-        return strtolower($this->replyTo[0]['email'] ?? $this->fromEmail);
+        return strtolower($this->fromEmail);
     }
 
     public function senderName(): string
     {
-        $name = $this->replyTo ? ($this->replyTo[0]['name'] ?: $this->fromName) : $this->fromName;
-        return trim($name) !== '' ? trim($name) : $this->senderEmail();
+        return trim($this->fromName) !== '' ? trim($this->fromName) : $this->senderEmail();
     }
 
     /** Never auto-respond to these. */

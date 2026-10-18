@@ -430,6 +430,9 @@ final class CloneImporter
                 'last_sync' => (string)($this->state['manifest']['created_at'] ?? ''), 'how' => 'copied from an export file during setup',
             ]);
         }
+        if ((int)($this->state['manifest']['schema'] ?? 0) < 4) {
+            Installer::grantCollaboratorPermission();
+        }
         Installer::finishClone();
         \Bakkbone\HelpCentre\Core\Audit::log('migration.copied', 'system', null, ['from' => $this->state['manifest']['base_url'] ?? '']);
         return $this->state;

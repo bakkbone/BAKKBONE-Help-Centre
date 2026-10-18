@@ -213,7 +213,8 @@ final class ApiController extends Controller
 
     public function cron(): void
     {
-        $key = (string)Request::input('key', '');
+        // The header keeps the key out of web server access logs; ?key= still works for web-cron services that can't send headers.
+        $key = (string)(Request::header('X-Cron-Key') ?? Request::input('key', ''));
         $expected = (string)App::config('cron_key', '');
         if ($expected === '' || !hash_equals($expected, $key)) {
             $this->json(['error' => 'Invalid cron key'], 403);

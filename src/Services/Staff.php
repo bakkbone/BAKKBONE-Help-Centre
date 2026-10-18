@@ -16,6 +16,7 @@ final class Staff
         'ticket.reply' => 'Post replies to users',
         'ticket.close' => 'Close / resolve tickets',
         'ticket.merge' => 'Merge tickets',
+        'ticket.collaborators' => 'Add and remove ticket collaborators (CCs)',
         'ticket.delete' => 'Delete tickets',
         'ticket.export' => 'Export tickets to CSV',
         'task.manage' => 'Create and manage tasks',

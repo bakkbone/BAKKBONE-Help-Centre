@@ -33,6 +33,7 @@ final class SystemController extends AdminController
         $this->view('admin/system', [
             'title' => __('System'), 'adminSection' => 'system', 'checks' => $checks, 'cronLast' => $cronLast,
             'cronUrl' => App::url('/api/cron', ['key' => App::config('cron_key')]),
+            'cronEndpoint' => App::url('/api/cron'), 'cronKey' => (string)App::config('cron_key'),
             'schemaVersion' => Settings::get('schema_version'),
             'migrationExpires' => Migration::keyExpires(),
             'newMigrationKey' => (function () { $k = \Bakkbone\HelpCentre\Core\Session::get('new_migration_key'); \Bakkbone\HelpCentre\Core\Session::forget('new_migration_key'); return $k; })(),

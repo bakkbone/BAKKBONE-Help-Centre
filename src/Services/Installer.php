@@ -183,7 +183,7 @@ final class Installer
             $all = array_keys(Staff::PERMISSIONS);
             $db->insert('roles', ['name' => __('All access'), 'permissions' => json_encode($all), 'created_at' => $now]);
             $db->insert('roles', ['name' => __('Expanded access'), 'permissions' => json_encode(array_values(array_diff($all, ['ticket.delete', 'user.delete', 'ban.manage']))), 'created_at' => $now]);
-            $db->insert('roles', ['name' => __('Limited access'), 'permissions' => json_encode(['ticket.create', 'ticket.reply', 'ticket.assign', 'ticket.transfer', 'ticket.close', 'task.manage']), 'created_at' => $now]);
+            $db->insert('roles', ['name' => __('Limited access'), 'permissions' => json_encode(['ticket.create', 'ticket.reply', 'ticket.assign', 'ticket.transfer', 'ticket.close', 'ticket.collaborators', 'task.manage']), 'created_at' => $now]);
             $db->insert('roles', ['name' => __('View only'), 'permissions' => json_encode([]), 'created_at' => $now]);
         }
         if ($lookups && !(int)$db->val('SELECT COUNT(*) FROM kb_categories')) {
@@ -231,10 +231,29 @@ final class Installer
         return $id;
     }
 
+    /** Before schema 4 every agent could manage collaborators, so roles that work on tickets keep that ability. */
+    public static function grantCollaboratorPermission(): void
+    {
+        $db = App::db();
+        foreach ($db->all('SELECT id, permissions FROM roles') as $role) {
+            $perms = json_decode((string)$role['permissions'], true);
+            if (!is_array($perms) || in_array('ticket.collaborators', $perms, true) || !array_intersect(['ticket.reply', 'ticket.edit'], $perms)) {
+                continue;
+            }
+            $perms[] = 'ticket.collaborators';
+            $db->update('roles', ['permissions' => json_encode(array_values($perms))], 'id = ?', [$role['id']]);
+        }
+    }
+
     /** Safe to run repeatedly. */
     public static function upgrade(): array
     {
+        $from = (int)Settings::get('schema_version');
         $log = Schema::sync(App::db());
+        if ($from < 4) {
+            self::grantCollaboratorPermission();
+            $log[] = 'Gave roles that can reply to or edit tickets the new "Add and remove ticket collaborators" permission';
+        }
         Templates::seed();
         Settings::set('schema_version', (string)HC_SCHEMA_VERSION);
         Settings::set('schema_upgrade_error', '');

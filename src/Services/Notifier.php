@@ -205,7 +205,7 @@ final class Notifier
         foreach ($recipients as $s) {
             $ctx = Tickets::context($t, $extra + Tickets::staffRecipient($s));
             $mail = Templates::render($template, $ctx);
-            Mailer::send(['to' => [['email' => $s['email'], 'name' => Staff::name($s)]], 'subject' => $mail['subject'], 'html' => $mail['html'], 'auto' => true, 'headers' => ['X-HelpCentre-Ticket' => (string)$t['number']]], $account['id'] ?? null);
+            Mailer::send(['to' => [['email' => $s['email'], 'name' => Staff::name($s)]], 'subject' => $mail['subject'], 'html' => $mail['html'], 'auto' => true, 'message_id' => Mailer::newMessageId((int)$t['id']), 'headers' => ['X-HelpCentre-Ticket' => (string)$t['number']]], $account['id'] ?? null);
         }
         if (in_array('admin', $targets, true)) {
             $admin = trim((string)Settings::get('admin_email'));

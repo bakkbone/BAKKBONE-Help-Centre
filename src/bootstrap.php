@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 define('HC_ROOT', dirname(__DIR__));
 define('HC_VERSION', '1.0.0');
-define('HC_SCHEMA_VERSION', 3);
+define('HC_SCHEMA_VERSION', 4);
 
 if (PHP_VERSION_ID < 80100) {
     http_response_code(500);

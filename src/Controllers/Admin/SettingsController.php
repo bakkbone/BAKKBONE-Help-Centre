@@ -50,6 +50,7 @@ final class SettingsController extends AdminController
                 'claim_on_reply' => [__('Assign unassigned tickets to the agent who replies'), 'bool'],
                 'lock_minutes' => [__('Ticket lock duration in minutes (0 = no collision locking)'), 'number'],
                 'collaborator_ticket_visibility' => [__('Collaborators (CCs) can see the ticket in the portal'), 'bool'],
+                'block_remote_images' => [__('Hide images from other websites in tickets until an agent chooses to show them'), 'bool', __('Images loaded from another website let the sender see when, and from which IP address, an agent opened the ticket.')],
             ]],
             'email' => ['label' => __('Email'), 'fields' => [
                 'default_email_account_id' => [__('Default outgoing mailbox'), 'select', $accounts],

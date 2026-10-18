@@ -38,7 +38,7 @@ $canEdit = Staff::can($me, 'user.manage');
         <?= csrf_field() ?>
         <fieldset <?= $canEdit ? '' : 'disabled' ?> style="border:0;padding:0;margin:0">
           <div class="field"><label for="name"><?= t('Name') ?></label><input id="name" type="text" name="name" value="<?= e($u['name']) ?>"></div>
-          <div class="field"><label for="email"><?= t('Email') ?></label><input id="email" type="email" name="email" value="<?= e($u['email']) ?>" required></div>
+          <div class="field"><label for="email"><?= t('Email') ?></label><input id="email" type="email" name="email" value="<?= e($u['email']) ?>" required<?= empty(\Bakkbone\HelpCentre\Services\Auth::staff()['is_admin']) ? ' readonly' : '' ?>></div>
           <div class="field"><label for="phone"><?= t('Phone') ?></label><input id="phone" type="tel" name="phone" value="<?= e($u['phone']) ?>"></div>
           <div class="field"><label for="org_id"><?= t('Organisation') ?></label><select id="org_id" name="org_id"><option value=""><?= t('— None —') ?></option><?php foreach ($orgs as $o): ?><option value="<?= (int)$o['id'] ?>"<?= selected($o['id'], $u['org_id']) ?>><?= e($o['name']) ?></option><?php endforeach; ?></select></div>
           <div class="field"><label for="status"><?= t('Status') ?></label><select id="status" name="status"><option value="active"<?= selected('active', $u['status']) ?>><?= t('Active') ?></option><option value="locked"<?= selected('locked', $u['status']) ?>><?= t('Locked (cannot sign in or open tickets)') ?></option></select></div>

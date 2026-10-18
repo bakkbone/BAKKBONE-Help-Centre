@@ -50,7 +50,7 @@ final class InboundProcessor
         $attachments = self::filterAttachments($mail);
         $others = array_values(array_filter(array_merge($mail->to, $mail->cc), fn($r) => !in_array($r['email'], $own, true) && $r['email'] !== $sender));
 
-        [$ticket, $strong] = self::findTicket($mail, $sender);
+        [$ticket, $strong, $signed] = self::findTicket($mail, $sender);
 
         if ($ticket) {
             while ($ticket && $ticket['merged_into']) {
@@ -61,6 +61,11 @@ final class InboundProcessor
         if ($ticket) {
             $staff = Staff::byEmail($sender);
             if ($staff && Settings::bool('staff_email_reply')) {
+                // A forged From can't produce this: only mail the help desk sent for this ticket carries the signed Message-ID.
+                if (!$signed) {
+                    Log::warning('Agent email reply ignored (no help desk reference)', "From: $sender\nSubject: {$mail->subject}\nVia: $via");
+                    return ['status' => 'rejected', 'reason' => 'Agent replies must answer a help desk email for this ticket'];
+                }
                 $owner = Users::find((int)$ticket['user_id']);
                 $userAlreadyGotIt = $owner && in_array(strtolower($owner['email']), array_column($others, 'email'), true);
                 if (Staff::canAccessTicket($staff, $ticket)) {
@@ -124,30 +129,30 @@ final class InboundProcessor
         return ['status' => 'created', 'ticket_id' => (int)$result['ticket']['id']];
     }
 
-    /** @return array{0:?array,1:bool} */
+    /** @return array{0:?array,1:bool,2:bool} ticket, strong match, matched a signed help desk Message-ID */
     private static function findTicket(ParsedEmail $mail, string $sender): array
     {
         $db = App::db();
         foreach ($mail->referencedIds() as $mid) {
             $tid = Mailer::ticketIdFromMessageId($mid);
+            $signed = $tid !== null;
             if (!$tid) {
                 $tid = (int)$db->val('SELECT ticket_id FROM thread_entries WHERE message_id = ? ORDER BY id DESC LIMIT 1', [$mid]) ?: null;
             }
             if ($tid && ($t = Tickets::find($tid))) {
-                return [$t, true];
+                return [$t, true, $signed];
             }
         }
         if (preg_match('/\[#([A-Za-z0-9\-]{3,32})\]/', $mail->subject, $m)) {
             $t = Tickets::byNumber($m[1]);
             if ($t) {
                 $user = Users::byEmail($sender);
-                $staff = Staff::byEmail($sender);
-                if ($staff || ($user && Tickets::isParticipant($t, (int)$user['id']))) {
-                    return [$t, false];
+                if (Staff::byEmail($sender) || ($user && Tickets::isParticipant($t, (int)$user['id']))) {
+                    return [$t, false, false];
                 }
             }
         }
-        return [null, false];
+        return [null, false, false];
     }
 
     public static function extractBody(ParsedEmail $mail): string

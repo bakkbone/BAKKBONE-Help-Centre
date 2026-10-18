@@ -89,6 +89,9 @@ final class InstallController extends Controller
             'password' => (string)Request::post('password', ''),
         ];
         $errors = [];
+        if ($driver === 'sqlite' && !self::sqlitePathAllowed((string)$db['path'])) {
+            $errors[] = __('The SQLite database file must be inside the storage/ folder and end in .sqlite or .db.');
+        }
         $cloning = Request::str('setup_mode') === 'clone';
         $importing = Request::str('setup_mode') === 'osticket';
         if (!$cloning) {
@@ -297,6 +300,18 @@ final class InstallController extends Controller
         }
         $this->view('setup/clone', ['title' => __('Copied'), 'state' => $summary, 'percent' => 100, 'owner' => true]);
         exit;
+    }
+
+    // Before install anyone can submit this form; a database file in the web root with PHP in a field would run as code.
+    private static function sqlitePathAllowed(string $path): bool
+    {
+        if (!preg_match('/\.(sqlite|sqlite3|db)$/i', $path) || str_contains($path, "\0")) {
+            return false;
+        }
+        $storage = realpath(App::storage());
+        $dir = realpath(dirname($path));
+        return $storage !== false && $dir !== false
+            && ($dir === $storage || str_starts_with($dir . DIRECTORY_SEPARATOR, $storage . DIRECTORY_SEPARATOR));
     }
 
     /** @return array{0:int,1:string}|null */

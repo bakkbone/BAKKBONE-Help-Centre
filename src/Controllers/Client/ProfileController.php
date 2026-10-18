@@ -39,6 +39,10 @@ final class ProfileController extends Controller
             $update['password_hash'] = Auth::hash($new);
         }
         App::db()->update('users', $update, 'id = ?', [$user['id']]);
+        if (isset($update['password_hash'])) {
+            \Bakkbone\HelpCentre\Core\Session::regenerate();
+            Auth::refreshStamp('users', (int)$user['id']);
+        }
         $this->flash('success', __('Your profile has been saved.'));
         $this->redirect('/profile');
     }

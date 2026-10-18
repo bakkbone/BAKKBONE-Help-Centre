@@ -313,6 +313,16 @@
     el.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
   });
 
+  var remoteImgs = $$('img[data-remote-src]');
+  $$('[data-remote-images-bar]').forEach(function (bar) {
+    if (!remoteImgs.length) return;
+    bar.hidden = false;
+    $('[data-show-remote-images]', bar).addEventListener('click', function () {
+      remoteImgs.forEach(function (img) { img.src = img.getAttribute('data-remote-src'); img.removeAttribute('data-remote-src'); });
+      bar.hidden = true;
+    });
+  });
+
   $$('[data-preview-source]').forEach(function (box) {
     var src = document.getElementById(box.getAttribute('data-preview-source'));
     if (!src) return;

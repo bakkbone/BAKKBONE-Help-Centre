@@ -229,6 +229,10 @@ final class UserController extends StaffController
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->failWith(__('A valid email address is required.'), '/panel/users/' . $id);
         }
+        // The email is the sign-in identity: an agent who could change it could sign in as the user and see tickets outside their departments.
+        if ($email !== strtolower((string)$u['email']) && !$this->staff['is_admin']) {
+            $this->failWith(__('Only an administrator can change a user\'s email address.'), '/panel/users/' . $id);
+        }
         $other = Users::byEmail($email);
         if ($other && (int)$other['id'] !== $id) {
             $this->failWith(__('Another user already has that email address.'), '/panel/users/' . $id);
@@ -260,7 +264,14 @@ final class UserController extends StaffController
         }
         $db = App::db();
         if (Request::bool('delete_tickets')) {
-            foreach ($db->all('SELECT * FROM tickets WHERE user_id = ?', [$id]) as $t) {
+            $owned = $db->all('SELECT * FROM tickets WHERE user_id = ?', [$id]);
+            if ($owned && !$this->can('ticket.delete')) {
+                $this->failWith(__('You do not have permission to delete tickets.'), '/panel/users/' . $id);
+            }
+            if (array_filter($owned, fn($t) => !Staff::canAccessTicket($this->staff, $t))) {
+                $this->failWith(__('Some of this user\'s tickets are in departments you can\'t access, so you can\'t delete them.'), '/panel/users/' . $id);
+            }
+            foreach ($owned as $t) {
                 Tickets::delete($t);
             }
         } elseif ((int)$db->val('SELECT COUNT(*) FROM tickets WHERE user_id = ?', [$id]) > 0) {

@@ -179,16 +179,15 @@ final class AuthController extends Controller
             $this->flash('info', Settings::bool('client_passwordless') ? __('You already have an account. Sign in below - we can email you a code.') : __('You already have an account. Sign in below or reset your password.'));
             $this->redirect('/login');
         }
-        if (!$user) {
-            $user = Users::findOrCreate($email, $name, $phone ?: null);
-        } else {
-            App::db()->update('users', ['name' => $name, 'phone' => $phone ?: $user['phone'], 'updated_at' => DB::now()], 'id = ?', [$user['id']]);
-        }
+        // An existing user's details change only after the code proves they own the address.
+        $user ??= Users::findOrCreate($email, $name, $phone ?: null);
         Session::set('user_pending', [
             'id' => (int)$user['id'],
             'email' => $email,
             'purpose' => 'verify',
             'hash' => $needPassword ? Auth::hash($password) : null,
+            'name' => $name,
+            'phone' => $phone,
         ]);
         Otp::issue('user', (int)$user['id'], 'verify', $email, $name);
         $this->flash('info', __('We\'ve emailed you a 6-digit code to confirm your address.'));
@@ -218,6 +217,12 @@ final class AuthController extends Controller
             $this->failWith(__('That code is incorrect or has expired.'), '/register/verify');
         }
         $update = ['verified' => 1, 'updated_at' => DB::now()];
+        if (($p['name'] ?? '') !== '') {
+            $update['name'] = mb_substr((string)$p['name'], 0, 190);
+        }
+        if (($p['phone'] ?? '') !== '') {
+            $update['phone'] = (string)$p['phone'];
+        }
         if (!empty($p['hash'])) {
             $update['password_hash'] = $p['hash'];
         }

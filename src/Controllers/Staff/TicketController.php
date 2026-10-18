@@ -430,6 +430,7 @@ final class TicketController extends StaffController
 
     public function collaborators(int $id): void
     {
+        $this->requirePerm('ticket.collaborators');
         $t = $this->ticketOr404($id);
         $db = App::db();
         if ($remove = Request::int('remove')) {
