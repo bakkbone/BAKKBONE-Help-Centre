@@ -16,6 +16,9 @@ The quickest start is the example in `addons/hello-world/`, which uses nearly
 everything below. Copy the folder, rename it and change `name` in `addon.json`.
 Don't edit the example in place: updates ship a fresh copy of it.
 
+Add-ons must be licensed under the GPL, version 3 or later — see
+"Licensing" at the end.
+
 ---
 
 ## 1. Layout
@@ -287,3 +290,19 @@ When you update BAKKBONE Help Centre, upload everything **except** `config/`
 and `storage/`. Uploading `addons/` and `custom/` is safe: the release only
 contains the example add-on and README files there, so your own files aren't
 touched.
+
+## 11. Licensing
+
+Add-ons must be licensed under the GNU General Public License, version 3 or
+later (`GPL-3.0-or-later`), the same licence as BAKKBONE Help Centre. Add-ons
+run inside the help desk and use its classes, hooks and templates, so they're
+treated as part of it.
+
+When you distribute an add-on:
+
+- include the GPL licence text (a `LICENSE` file in the add-on's folder);
+- make the source available to everyone you give the add-on to — for a PHP
+  add-on, shipping the folder as-is does this;
+- check that any libraries you bundle are GPL-compatible.
+
+See [LICENSE](LICENSE) and the README's License section.
